@@ -1,0 +1,348 @@
+        /* 🎨 Color variables (default = light mode) */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #111111;
+            --title-color: #f3b407;
+            --card-bg: #ffffff;
+            --placeholder-color: #3f3e3e;
+            --shadow-color: rgba(17, 17, 17, 0.2);
+            --mic-border: #eca50b;
+            --suggestion-text: #555555;
+        }
+
+        body {
+            margin: 0;
+            height: calc(100dvh - 120px);
+            background: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            padding-top: 120px;
+            overflow: auto;
+        }
+
+        .title {
+            font-size: 85px;
+            font-weight: bold;
+            color: var(--title-color);
+            letter-spacing: -2px;
+            margin-bottom: 45px;
+        }
+
+        .search-box {
+            width: 90%;
+            max-width: 600px;
+            background: var(--card-bg);
+            border-radius: 50px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 6px var(--shadow-color);
+            transition: box-shadow 0.2s ease, transform 0.2s ease; /* 🔹 focus animation */
+            cursor: text; /* ADDED: whole box feels clickable */
+        }
+
+        /* 🔹 Focused state for search box */
+        .search-box.focused {
+            box-shadow: 0 4px 14px var(--shadow-color);
+            transform: translateY(-1px);
+        }
+
+        #searchInput {
+            flex: 1;
+            font-size: 17px;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: var(--text-color);
+        }
+
+        #searchInput::placeholder {
+            color: var(--placeholder-color);
+            transition: color 0.2s ease, opacity 0.15s ease; /* halka smooth feel */
+        }
+
+        .mic-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 2px solid var(--mic-border);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+        }
+
+        /* 🔹 Mic hover / tap animation */
+        .mic-icon:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 8px var(--shadow-color);
+        }
+
+        .mic-icon:active {
+            transform: scale(0.96);
+            box-shadow: 0 0 4px var(--shadow-color);
+        }
+
+        .google-mic {
+            position: relative;
+            width: 6px;
+            height: 10px;
+            background: var(--text-color);
+            border-radius: 999px;
+            top: -1px;
+        }
+
+        .google-mic::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 6px;
+            width: 10px;
+            height: 5px;
+            border: 1.5px solid var(--text-color);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .google-mic::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 11px;
+            width: 2px;
+            height: 4px;
+            background: var(--text-color);
+            border-radius: 2px;
+        }
+
+        /* Clear (X) button */
+        #clearBtn {
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            cursor: pointer;
+            display: none; /* default me hidden */
+            padding: 0 4px;
+            line-height: 1;
+            color: var(--placeholder-color);
+        }
+
+        /* Niche suggestion box */
+        #suggestionBox {
+            width: 90%;
+            max-width: 600px;
+            font-size: 14px;
+            color: var(--suggestion-text);
+            margin-top: 8px;
+            font-family: Arial, sans-serif;
+            opacity: 0;                     /* 🔹 animation default */
+            transform: translateY(4px);     /* halka neeche */
+            transition: opacity 0.18s ease, transform 0.18s ease;
+        }
+
+        /* 🔹 Visible state for suggestion (fade + slide-up) */
+        #suggestionBox.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #suggestionBox span.query {
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        /* 🎧 Mic listening state – soft pulsing circle, icon visible */
+        .mic-icon.listening {
+            background: #ffe8b3;
+            border-color: var(--mic-border);
+            animation: mic-pulse 1s ease-in-out infinite;
+            box-shadow: 0 0 0 0 rgba(236,165,11,0.4);
+        }
+
+        @keyframes mic-pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(236,165,11,0.4);
+            }
+            50% {
+                transform: scale(1.08);
+                box-shadow: 0 0 0 8px rgba(236,165,11,0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(236,165,11,0.0);
+            }
+        }
+
+        /* Mobile view thoda compact */
+        @media (max-width: 600px) {
+            body {
+                padding-top: 80px;
+            }
+            .title {
+                font-size: 60px;
+            }
+        }
+
+        /* =========================
+        TOP RIGHT MENU (GOOGLE STYLE)
+        ========================= */
+
+.top-menu {
+    position: fixed;
+    top: 16px;
+    right: 20px;
+    z-index: 2000;
+}
+
+/* ☰ button */
+.menu-btn {
+    font-size: 22px;
+    cursor: pointer;
+    user-select: none;
+    padding: 6px 10px;
+    border-radius: 50%;
+    color: var(--text-color);
+}
+
+.menu a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+
+.menu-btn:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+/* dropdown panel */
+.menu {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background: var(--card-bg);
+    box-shadow: 0 8px 24px var(--shadow-color);
+    border-radius: 14px;
+    padding: 8px 0;
+    min-width: 180px;
+    display: none;
+}
+
+/* show state */
+.menu.show {
+    display: flex;
+    flex-direction: column;
+}
+
+/* menu items */
+.menu-item {
+    padding: 12px 18px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+.menu-item:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+/* ================= SETTINGS POPUP ================= */
+
+.settings-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 80px;
+    z-index: 3000;
+}
+
+.settings-overlay.show {
+    display: flex;
+}
+
+.settings-box {
+    background: var(--card-bg);
+    color: var(--text-color);
+    width: 320px;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px var(--shadow-color);
+}
+
+.settings-box h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.setting-item {
+    display: flex;
+    gap: 8px;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.close-settings {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.force-dark {
+    --bg-color: #050505;
+    --text-color: #f5f5f5;
+    --title-color: #f3c64a;
+    --card-bg: #111111;
+    --placeholder-color: #9a9a9a;
+    --shadow-color: rgba(0, 0, 0, 0.8);
+    --mic-border: #f0b93a;
+    --suggestion-text: #cccccc;
+}
+
+/* ===== SETTINGS STRUCTURE ===== */
+
+.settings-title {
+    margin: 0 0 12px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.settings-section {
+    margin-bottom: 16px;
+}
+
+.section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 10px;
+    text-transform: none;
+}
+
+.setting-option {
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.setting-option:hover {
+    background: rgba(0,0,0,0.06);
+}
+
