@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About</title>
+
+    <style>
+        /* ============================
+           1. UI THEME VARIABLES
+           ============================ */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #111111;
+            --card-bg: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.15);
+            --accent-color: #f3b407; /* Gold */
+            --border-color: #eeeeee;
+            --text-muted: #666666;
+        }
+
+        body.dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --accent-color: #ffca28;
+            --border-color: #333333;
+            --text-muted: #888888;
+        }
+
+        /* ============================
+           2. LAYOUT
+           ============================ */
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 60px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .about-box {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 450px;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        /* ============================
+           3. CONTENT STYLING
+           ============================ */
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* Center align vertically */
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 28px;
+            color: var(--accent-color);
+            letter-spacing: -0.5px;
+        }
+
+        .close-btn {
+            text-decoration: none;
+            font-size: 32px;
+            color: var(--text-color);
+            line-height: 0.8;
+            font-weight: bold;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        .close-btn:hover {
+            opacity: 1;
+        }
+
+        /* Description Paragraph */
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-color);
+            margin-bottom: 25px;
+            opacity: 0.95;
+        }
+
+        /* List Section */
+        .info-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            font-size: 15px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            color: var(--text-muted);
+        }
+
+        .value {
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        /* Footer - Designed by Akram */
+        .footer-credit {
+            margin-top: 25px;
+            padding-top: 15px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="about-box">
+        <div class="header-row">
+            <h2>Browser Core</h2>
+            <a href="index.html" class="close-btn" aria-label="Close">&times;</a>
+        </div>
+
+        <p>
+            Browser Core is engineered for speed and simplicity. 
+            A privacy-first start page that brings the web back to its roots—fast, focused, and distraction-free.
+        </p>
+
+        <ul class="info-list">
+            <li class="info-item">
+                <span class="label">Performance</span>
+                <span class="value">Ultra Fast</span>
+            </li>
+            <li class="info-item">
+                <span class="label">Version</span>
+                <span class="value">1.0 Pro</span>
+            </li>
+        </ul>
+
+        <div class="footer-credit">
+            Designed by Akram
+        </div>
+    </div>
+
+    <script>
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+
+</body>
+</html>

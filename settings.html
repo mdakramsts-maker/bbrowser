@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    
+    <style>
+        /* ============================
+           1. UI THEME VARIABLES (MATCHED WITH HOME)
+           ============================ */
+        :root {
+            /* Light Mode (Default) */
+            --bg-color: #ffffff;
+            --text-color: #111111;
+            --card-bg: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.15);
+            --toggle-off: #ccc;
+            --toggle-on: #f3b407; /* Yellow/Gold Theme Color */
+            --border-color: #eeeeee;
+        }
+
+        /* Dark Mode Colors */
+        body.dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --toggle-on: #ffca28;
+            --border-color: #333333;
+        }
+
+        /* ============================
+           2. LAYOUT & DESIGN
+           ============================ */
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Top align thoda sa */
+            padding-top: 60px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .settings-box {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 450px; /* Compact width like mobile app */
+            padding: 25px;
+            border-radius: 20px; /* Rounded card */
+            box-shadow: 0 10px 30px var(--shadow-color);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Header Style */
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .settings-header h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .close-btn {
+            text-decoration: none;
+            font-size: 32px;
+            color: var(--text-color);
+            line-height: 0.8;
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+        .close-btn:hover {
+            opacity: 0.7;
+        }
+
+        /* Row Style */
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+        }
+
+        .label-text {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        /* ============================
+           3. TOGGLE SWITCH DESIGN
+           ============================ */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 28px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--toggle-off);
+            transition: .3s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px; width: 20px;
+            left: 4px; bottom: 4px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* ON State */
+        input:checked + .slider {
+            background-color: var(--toggle-on);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="settings-box">
+        <div class="settings-header">
+            <h2>Settings</h2>
+            <a href="index.html" class="close-btn">&times;</a>
+        </div>
+
+        <div class="setting-item">
+            <span id="themeLabel" class="label-text">Dark Mode</span>
+            
+            <label class="switch">
+                <input type="checkbox" id="darkModeToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('darkModeToggle');
+        const themeLabel = document.getElementById('themeLabel');
+        const body = document.body;
+
+        // Function: Text Update karne ke liye
+        function updateLabel(isDark) {
+            if (isDark) {
+                themeLabel.textContent = "Light Mode"; // Agar Dark on hai, to switch 'Light' ke liye hoga
+            } else {
+                themeLabel.textContent = "Dark Mode";  // Agar Light on hai, to switch 'Dark' ke liye hoga
+            }
+        }
+
+        // 1. PAGE LOAD: Check karo saved theme kya hai
+        const currentTheme = localStorage.getItem('theme');
+
+        if (currentTheme === 'dark') {
+            body.classList.add('dark-mode');
+            toggleBtn.checked = true;
+            updateLabel(true);
+        } else {
+            // Default Light mode
+            body.classList.remove('dark-mode');
+            toggleBtn.checked = false;
+            updateLabel(false);
+        }
+
+        // 2. TOGGLE EVENT: Jab switch dabayein
+        toggleBtn.addEventListener('change', function() {
+            if (this.checked) {
+                // ---> Switch ON (Dark Mode)
+                body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+                updateLabel(true);
+            } else {
+                // ---> Switch OFF (Light Mode)
+                body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light');
+                updateLabel(false);
+            }
+        });
+    </script>
+
+</body>
+</html>

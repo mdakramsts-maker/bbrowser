@@ -356,8 +356,8 @@
         }
             
         /* =========================
-   TOP RIGHT MENU LOGIC
-   ========================= */
+            TOP RIGHT MENU LOGIC
+           ========================= */
 
 const menuBtn = document.getElementById("menuBtn");
 const menu = document.getElementById("menu");
@@ -381,50 +381,15 @@ if (menuBtn && menu) {
     });
 }
 
-/* ================= SETTINGS POPUP + MODE LOGIC ================= */
 
-const settingsOverlay = document.getElementById("settingsOverlay");
-const settingsLink = document.getElementById("settingsLink");
-const closeSettings = document.getElementById("closeSettings");
 
-const darkModeBtn = document.getElementById("darkModeBtn");
-const lightModeBtn = document.getElementById("lightModeBtn");
-
-// open settings
-if (settingsLink) {
-    settingsLink.addEventListener("click", function (e) {
-        e.preventDefault();
-        menu.classList.remove("show");
-        settingsOverlay.classList.add("show");
-    });
+/* --- DARK MODE LOADER (Sabse Upar Paste Karein) --- */
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme === 'dark') {
+    document.body.classList.add('dark-mode');
 }
 
-// close button
-if (closeSettings) {
-    closeSettings.addEventListener("click", () => {
-        settingsOverlay.classList.remove("show");
-    });
-}
-
-// outside click close
-if (settingsOverlay) {
-    settingsOverlay.addEventListener("click", (e) => {
-        if (e.target === settingsOverlay) {
-            settingsOverlay.classList.remove("show");
-        }
-    });
-}
-
-// Dark mode
-if (darkModeBtn) {
-    darkModeBtn.addEventListener("click", () => {
-        document.documentElement.classList.add("force-dark");
-    });
-}
-
-// Light mode
-if (lightModeBtn) {
-    lightModeBtn.addEventListener("click", () => {
-        document.documentElement.classList.remove("force-dark");
-    });
-}
+/* ... Iske niche aapka purana search code ... */
+document.addEventListener("DOMContentLoaded", () => {
+    // ... baaki sara code ...
+});

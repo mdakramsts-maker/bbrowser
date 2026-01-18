@@ -16,7 +16,7 @@
         <div class="menu-btn" id="menuBtn" aria-label="Menu">☰</div>
 
         <div class="menu" id="menu">
-            <a href="#" class="menu-item" id="settingsLink">Settings</a>
+            <a href="settings.html" class="menu-item">Settings</a>
             <a href="game.html" class="menu-item">Game</a>
             <a href="about.html" class="menu-item">About</a>
         </div>
@@ -31,39 +31,21 @@
         </div>
 
         <input
-            id="searchInput"
-            type="text"
-            placeholder="Search anything or type a URL"
-            autofocus>
+             id="searchInput"
+             type="text"
+             placeholder="Search anything or type a URL"
+             autocomplete="off"
+             autocorrect="off"
+             autocapitalize="off"
+             spellcheck="false"
+             autofocus>
+
 
         <button id="clearBtn" type="button" aria-label="Clear search">×</button>
 
     </div>
 
     <div id="suggestionBox"></div>
-
-    <!-- ================= SETTINGS POPUP ================= -->
-<div class="settings-overlay" id="settingsOverlay">
-
-    <div class="settings-box">
-        <h3 class="settings-title">Settings</h3>
-
-        <div class="settings-section">
-            <div class="section-title">Modes</div>
-
-            <div class="setting-option" id="lightModeBtn">
-                Light Mode
-            </div>
-
-            <div class="setting-option" id="darkModeBtn">
-                Dark Mode
-            </div>
-        </div>
-
-        <button class="close-settings" id="closeSettings">Close</button>
-    </div>
-
-</div>
     
     <!-- JS Link -->
     <script src="script.js"></script>

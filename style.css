@@ -219,9 +219,7 @@
 .menu a {
     text-decoration: none;
     color: inherit;
-    display: block;
 }
-
 
 .menu-btn:hover {
     background: rgba(0, 0, 0, 0.08);
@@ -258,91 +256,31 @@
     background: rgba(0, 0, 0, 0.06);
 }
 
-/* ================= SETTINGS POPUP ================= */
 
-.settings-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.25);
-    display: none;
-    align-items: flex-start;
-    justify-content: center;
-    padding-top: 80px;
-    z-index: 3000;
+/* --- 1. Variables (Default Light) --- */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #111111;
+    --title-color: #f3b407;
+    --card-bg: #ffffff;
+    --placeholder-color: #666666;
+    --shadow-color: rgba(0, 0, 0, 0.15);
+    --mic-border: #eca50b;
+    --suggestion-text: #555555;
+    --hover-bg: rgba(0, 0, 0, 0.05);
 }
 
-.settings-overlay.show {
-    display: flex;
+/* --- 2. Dark Mode Support (Ye zaroor add karein) --- */
+body.dark-mode {
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --title-color: #ffca28;
+    --card-bg: #1e1e1e;
+    --placeholder-color: #888888;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --mic-border: #ffca28;
+    --suggestion-text: #aaaaaa;
+    --hover-bg: rgba(255, 255, 255, 0.1);
 }
 
-.settings-box {
-    background: var(--card-bg);
-    color: var(--text-color);
-    width: 320px;
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px var(--shadow-color);
-}
-
-.settings-box h3 {
-    margin-top: 0;
-    margin-bottom: 16px;
-}
-
-.setting-item {
-    display: flex;
-    gap: 8px;
-    font-size: 14px;
-    margin-bottom: 20px;
-}
-
-.close-settings {
-    width: 100%;
-    padding: 8px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.force-dark {
-    --bg-color: #050505;
-    --text-color: #f5f5f5;
-    --title-color: #f3c64a;
-    --card-bg: #111111;
-    --placeholder-color: #9a9a9a;
-    --shadow-color: rgba(0, 0, 0, 0.8);
-    --mic-border: #f0b93a;
-    --suggestion-text: #cccccc;
-}
-
-/* ===== SETTINGS STRUCTURE ===== */
-
-.settings-title {
-    margin: 0 0 12px;
-    font-size: 16px;
-    text-align: center;
-}
-
-.settings-section {
-    margin-bottom: 16px;
-}
-
-.section-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-color);
-    margin-bottom: 10px;
-    text-transform: none;
-}
-
-.setting-option {
-    padding: 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.setting-option:hover {
-    background: rgba(0,0,0,0.06);
-}
-
+/* ... Baaki CSS same rahega ... */
