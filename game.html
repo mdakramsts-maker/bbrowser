@@ -1,16 +1,61 @@
-<div style="text-align:center; margin-top:20px;">
-  <a href="https://github.com/mdakramsts-maker/bbrowser/releases/latest"
-     target="_blank"
-     style="
-       display:inline-block;
-       padding:14px 26px;
-       background:#22c55e;
-       color:#000;
-       font-weight:bold;
-       border-radius:10px;
-       text-decoration:none;
-       font-size:16px;
-     ">
-    ⬇ Download Gree Runner (Windows App)
-  </a>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gree Runner Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h1 style="text-align:center;">Gree Runner</h1>
+  <p style="text-align:center;">
+    Endless 2D Runner Game – Web & Desktop
+  </p>
+
+  <!-- ===================== -->
+  <!-- DOWNLOAD DESKTOP APP -->
+  <!-- ===================== -->
+  <div style="text-align:center; margin:30px 0;">
+    <a
+      href="https://github.com/mdakramsts-maker/bbrowser/releases/download/v1.0.0/GreeRunner-Setup.exe"
+      download
+      style="
+        display:inline-block;
+        padding:16px 30px;
+        background:#22c55e;
+        color:#000;
+        font-weight:bold;
+        font-size:18px;
+        border-radius:12px;
+        text-decoration:none;
+        box-shadow:0 6px 15px rgba(0,0,0,0.25);
+      "
+    >
+      ⬇ Download Gree Runner (Windows App)
+    </a>
+
+    <p style="margin-top:10px; font-size:14px; color:#555;">
+      File size ~67MB • Windows 64-bit
+    </p>
+  </div>
+
+  <hr style="margin:40px 0;">
+
+  <!-- ===================== -->
+  <!-- WEB GAME AREA -->
+  <!-- ===================== -->
+  <div id="gameArea" style="text-align:center;">
+    <p>Use <b>Space</b> or <b>↑ Arrow</b> to jump</p>
+    <canvas id="gameCanvas" width="800" height="300"
+      style="border:2px solid #000;">
+    </canvas>
+  </div>
+
+  <!-- JS -->
+  <script src="script.js"></script>
+
+</body>
+</html>
