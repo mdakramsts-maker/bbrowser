@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,47 +12,44 @@
 
 <body>
 
-    <!-- TOP RIGHT MENU (Three Line) -->
+    <!-- TOP RIGHT MENU -->
     <div class="top-menu">
-        <div class="menu-btn" id="menuBtn" aria-label="Menu">☰</div>
+        <div class="menu-btn" id="menuBtn" aria-label="Menu" tabindex="0" role="button">☰</div>
 
         <div class="menu" id="menu">
             <a href="settings.html" class="menu-item">Settings</a>
-            <a href="game.html" class="menu-item">Game</a>
-            <a href="downloads" class="menu-item">PC Game</a>
             <a href="about.html" class="menu-item">About</a>
         </div>
     </div>
 
     <div class="title">Browser</div>
 
-    <div class="search-box">
+    <!-- SEARCH CONTAINER (unified box) -->
+    <div class="search-container">
+        <div class="search-box">
 
-        <div class="mic-icon" onclick="startVoice()" role="button" aria-label="Toggle voice search">
-            <div class="google-mic"></div>
+            <!-- Mic Icon -->
+            <div class="mic-icon" onclick="startVoice()" role="button" aria-label="Toggle voice search">
+                <div class="google-mic"></div>
+            </div>
+
+
+            <input id="searchInput" type="text" placeholder="Search anything or type a URL" autocomplete="off"
+                autocorrect="off" autocapitalize="off" spellcheck="false">
+
+            <!-- Clear Button -->
+            <button id="clearBtn" type="button" aria-label="Clear search">×</button>
         </div>
 
-        <input
-             id="searchInput"
-             type="text"
-             placeholder="Search anything or type a URL"
-             autocomplete="off"
-             autocorrect="off"
-             autocapitalize="off"
-             spellcheck="false"
-             autofocus>
-
-
-        <button id="clearBtn" type="button" aria-label="Clear search">×</button>
-
+        <!-- HISTORY DROPDOWN (seamlessly connected) -->
+        <div id="historyDropdown" class="history-dropdown" role="menu" aria-label="Search history">
+            <!-- History items will be inserted here dynamically -->
+        </div>
     </div>
 
-    <div id="suggestionBox"></div>
-    
     <!-- JS Link -->
     <script src="script.js"></script>
 
 </body>
+
 </html>
-
-

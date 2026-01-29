@@ -1,395 +1,594 @@
-        const searchInput = document.getElementById("searchInput");
-        const micIcon = document.querySelector(".mic-icon");
-        const clearBtn = document.getElementById("clearBtn");
-        const suggestionBox = document.getElementById("suggestionBox");
-        const searchBox = document.querySelector(".search-box"); // 🔹 for focus animation
+// ============================================
+// STORAGE WRAPPER (with error handling)
+// ============================================
+const storage = {
+    get: (key) => {
+        try {
+            return localStorage.getItem(key);
+        } catch (e) {
+            console.error('localStorage get error:', e);
+            return null;
+        }
+    },
+    set: (key, value) => {
+        try {
+            localStorage.setItem(key, value);
+        } catch (e) {
+            console.error('localStorage set error:', e);
+        }
+    },
+    remove: (key) => {
+        try {
+            localStorage.removeItem(key);
+        } catch (e) {
+            console.error('localStorage remove error:', e);
+        }
+    }
+};
 
-        const DEFAULT_PLACEHOLDER = "Search anything or type a URL";
-        let recognition = null; // upar define, niche assign
-        let isMicOn = false; // 🔥 toggle state
+// ============================================
+// DOM ELEMENTS
+// ============================================
+const searchInput = document.getElementById("searchInput");
+const micIcon = document.querySelector(".mic-icon");
+const clearBtn = document.getElementById("clearBtn");
+const historyDropdown = document.getElementById("historyDropdown");
+const searchBox = document.querySelector(".search-box");
+searchBox.addEventListener("click", function () {
+    searchInput.focus();
+});
 
-        // ----------------------------
-        // 🔹 Make whole search-box clickable
-        // Ignore clicks on mic-icon and clearBtn so their handlers work normally
-        // ----------------------------
-        if (searchBox) {
-            searchBox.addEventListener("click", function (e) {
-                const clickedInsideMic = micIcon && micIcon.contains(e.target);
-                const clickedClearBtn = clearBtn && (e.target === clearBtn || clearBtn.contains(e.target));
-                if (!clickedInsideMic && !clickedClearBtn) {
-                    searchInput.focus();
-                }
-            });
+const searchContainer = document.querySelector(".search-container");
+
+// ============================================
+// CONSTANTS
+// ============================================
+const DEFAULT_PLACEHOLDER = "Search anything or type a URL";
+// ============================================
+// STATE
+// ============================================
+let recognition = null;
+let isVoiceActive = false;
+let isRecognitionRunning = false;
+
+// ============================================
+// SEARCH HISTORY MANAGEMENT
+// ============================================
+function getSearchHistory() {
+    const history = storage.get('searchHistory');
+    if (!history) return [];
+    try {
+        return JSON.parse(history);
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveSearchHistory(query) {
+    if (!query || query.trim().length === 0) return;
+
+    let history = getSearchHistory();
+
+    history = history.filter(item => item !== query);
+
+    history.unshift(query);
+
+    storage.set('searchHistory', JSON.stringify(history));
+}
+function deleteHistoryItem(query) {
+    let history = getSearchHistory();
+    history = history.filter(item => item !== query);
+    storage.set('searchHistory', JSON.stringify(history));
+
+    const text = searchInput.value.trim();
+
+    // If history is empty, hide dropdown
+    if (history.length === 0) {
+        hideHistoryDropdown();
+        historyDropdown.innerHTML = "";
+        return;
+    }
+
+    // Otherwise keep history visible
+    renderHistoryDropdown(text);
+}
+function renderHistoryDropdown(inputText = "") {
+    const history = getSearchHistory();
+    if (history.length === 0) {
+        hideHistoryDropdown();
+        return;
+    }
+
+    const text = inputText.trim().toLowerCase();
+
+    // If search box is empty
+    if (text === "") {
+        const visibleList = history.slice(0, 5);
+        renderHistoryHTML(visibleList);
+        return;
+    }
+
+    // Items that start with the search text
+    let filtered = history.filter(item =>
+        item.toLowerCase().startsWith(text)
+    );
+
+    // If nothing matches
+    if (filtered.length === 0) {
+        hideHistoryDropdown();
+        historyDropdown.innerHTML = "";
+        return;
+    }
+
+    // Alphabetical order (A → Z)
+    filtered.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+    const visibleList = filtered.slice(0, 5);
+    renderHistoryHTML(visibleList);
+}
+
+
+function showHistoryDropdown() {
+    const history = getSearchHistory();
+    if (history.length === 0) return;
+
+    renderHistoryDropdown();
+    historyDropdown.classList.add('show');
+    searchContainer.classList.add('history-open');
+}
+
+function hideHistoryDropdown() {
+    historyDropdown.classList.remove('show');
+    searchContainer.classList.remove('history-open');
+}
+
+// ============================================
+// SEARCH ENGINE MANAGEMENT
+// ============================================
+function getSearchEngine() {
+    const engine = storage.get('searchEngine');
+    const validEngines = ['google', 'duckduckgo', 'bing', 'brave', 'yahoo', 'startpage', 'ecosia'];
+
+    if (validEngines.includes(engine)) {
+        return engine;
+    }
+
+    return 'google';
+}
+
+function buildSearchUrl(query) {
+    const engine = getSearchEngine();
+    const encoded = encodeURIComponent(query);
+
+    switch (engine) {
+        case 'duckduckgo':
+            return "https://duckduckgo.com/?q=" + encoded;
+        case 'bing':
+            return "https://www.bing.com/search?q=" + encoded;
+        case 'brave':
+            return "https://search.brave.com/search?q=" + encoded;
+        case 'yahoo':
+            return "https://search.yahoo.com/search?p=" + encoded;
+        case 'startpage':
+            return "https://www.startpage.com/do/search?q=" + encoded;
+        case 'ecosia':
+            return "https://www.ecosia.org/search?q=" + encoded;
+        default:
+            return "https://www.google.com/search?q=" + encoded;
+    }
+}
+
+// ============================================
+// URL DETECTION
+// ============================================
+function escapeHTML(str) {
+    if (!str) return "";
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function isLikelyUrl(text) {
+    try {
+        const input = text.trim();
+
+        if (!input) return false;
+        if (/\s/.test(input)) return false;
+
+        // Don't treat single words as URLs
+        if (!input.includes(".") && !input.includes(":")) {
+            return false;
         }
 
-        // ✅ Valid TLD list for URL check
-        const VALID_TLDS = [
-            "com","net","org","co","in","io",
-           "info","me","biz","pro","tv","ai",
-           "app","dev","online","tech","shop","store",
-           "live","site","blog","cloud","digital",
-           "news","media","services","world","fun",
-           "company","solutions","agency","network","support"
-        ];
+        const url = input.includes("://")
+            ? input
+            : "https://" + input;
 
-        // ----------------------------
-        // ✅ XSS fix: escape helper (only change requested)
-        // ----------------------------
-        function escapeHTML(str) {
-            if (!str) return "";
-            return str.replace(/[&<>"']/g, function (m) {
-                return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[m];
-            });
+        new URL(url);
+        return true;
+
+    } catch (e) {
+        return false;
+    }
+}
+
+function buildUrl(text) {
+    let query = (text || "").trim();
+    if (!query) return null;
+
+    if (isLikelyUrl(query)) {
+        if (!query.startsWith("http://") && !query.startsWith("https://")) {
+            query = "https://" + query;
+        }
+        return query;
+    }
+
+    return buildSearchUrl(query);
+}
+
+
+// ============================================
+// SEARCH EXECUTION
+// ============================================
+function executeSearch(query, openInNewTab = false) {
+    if (!query) return;
+
+    const url = buildUrl(query);
+    if (!url) return;
+
+    if (!isLikelyUrl(query)) {
+        saveSearchHistory(query);
+    }
+
+    if (openInNewTab) {
+        window.open(url, "_blank");
+    } else {
+        window.location.href = url;
+    }
+}
+
+// ============================================
+// VOICE RECOGNITION SETUP
+// ============================================
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = function () {
+        isRecognitionRunning = true;
+    };
+
+    recognition.onresult = function (event) {
+        isVoiceActive = false;
+        isRecognitionRunning = false;
+
+        if (micIcon) {
+            micIcon.classList.remove("listening");
         }
 
-        // ✅ Check kare ki text "likely URL" hai ya nahi
-        function isLikelyUrl(text) {
-            const query = (text || "").trim();
-
-            if (!query) return false;
-
-            // Agar space hai → URL mat maano
-            if (/\s/.test(query)) return false;
-
-            // Agar allerede http/https se start hai → URL hi hai
-            if (/^[a-zA-Z]+:\/\//.test(query)) {
-                return true;
-            }
-
-            // Sirf domain part lo (path ke pehle tak)
-            const domainPart = query.split("/")[0].split("?")[0].split("#")[0];
-
-            // Dot hona chahiye (jaise example.com)
-            if (!domainPart.includes(".")) {
-                // allow localhost
-                if (domainPart.toLowerCase() === "localhost") return true;
-                return false;
-            }
-
-            const parts = domainPart.split(".");
-            if (parts.length < 2) return false;
-
-            const tld = parts[parts.length - 1].toLowerCase();
-
-            // Agar TLD hamari list me hai to URL maante hain
-            return VALID_TLDS.includes(tld);
+        if (event.results && event.results.length > 0) {
+            const text = event.results[0][0].transcript;
+            searchInput.value = text;
+            clearBtn.classList.add('visible');
         }
 
-        // ✅ Common URL builder (ab smart URL check ke saath)
-        function buildUrl(text) {
-            let query = (text || "").trim();
-            if (!query) return null;
+        searchInput.placeholder = DEFAULT_PLACEHOLDER;
 
-            if (/^[a-zA-Z]+:\/\//.test(query)) {
-                return query;
-            }
-
-            if (isLikelyUrl(query)) {
-                if (!query.startsWith("http://") && !query.startsWith("https://")) {
-                    query = "https://" + query;
-                }
-                return query;
-            } else {
-                return "https://www.google.com/search?q=" + encodeURIComponent(query);
-            }
+        if (searchInput.value.trim().length > 0) {
+            clearBtn.classList.add('visible');
         }
+    };
 
-        // ✅ Keyboard se search (Enter) → same tab + Opening/Searching text
-        function runSearchFromKeyboard() {
-            const text = searchInput.value.trim();
-            const url = buildUrl(text);
-            if (!url) return;
+    recognition.onend = function () {
+        isRecognitionRunning = false;
 
-            if (isLikelyUrl(text)) {
-                suggestionBox.innerHTML = `Opening: <span class="query">${escapeHTML(url)}</span>`;
-            } else {
-                suggestionBox.innerHTML = `Searching for: <span class="query">${escapeHTML(text)}</span>`;
-            }
+        if (isVoiceActive) {
+            isVoiceActive = false;
 
-            // 🔹 show animation for suggestion
-            suggestionBox.classList.add("show");
-
-            window.location.href = url; // SAME TAB
-        }
-
-        // *** MANDATORY FIX ADDED: runSearchFromVoice function (minimal safe implementation)
-        function runSearchFromVoice(transcript) {
-            if (!transcript) return;
-            // set the input value
-            searchInput.value = transcript;
-
-            // show suggestion safely (use textContent + span)
-            suggestionBox.textContent = "";
-            const prefixText = isLikelyUrl(transcript) ? "Opening:" : "Searching for:";
-            suggestionBox.textContent = prefixText + " ";
-            const span = document.createElement('span');
-            span.className = 'query';
-            span.textContent = transcript;
-            suggestionBox.appendChild(span);
-            suggestionBox.classList.add('show');
-
-            // perform the search/open
-            const url = buildUrl(transcript);
-            if (!url) return;
-            // same behavior as keyboard (same tab)
-            window.location.href = url;
-        }
-
-        // ENTER se normal search
-        searchInput.addEventListener("keydown", function (e) {
-            if (e.key === "Enter" || e.keyCode === 13) {
-
-                // SHIFT+ENTER -> open in new tab
-                if (e.shiftKey) {
-                    const text = searchInput.value.trim();
-                    const url = buildUrl(text);
-                    if (!url) return;
-                    window.open(url, "_blank");
-                    return;
-                }
-
-                runSearchFromKeyboard();
-            }
-        });
-
-        // ----------------------------
-        // 🔹 Global keyboard shortcuts (Escape, Ctrl/Cmd+K, Ctrl/Cmd+L)
-        // ----------------------------
-        document.addEventListener("keydown", function (e) {
-            // Escape → clear input + hide suggestions
-            if (e.key === "Escape") {
-                searchInput.value = "";
-                suggestionBox.innerHTML = "";
-                suggestionBox.classList.remove("show");
-                clearBtn.style.display = "none";
-                searchInput.focus();
-                return;
-            }
-
-            // Support both Ctrl (Windows/Linux) and Cmd (Mac)
-            const mod = e.ctrlKey || e.metaKey;
-
-            // Ctrl/Cmd + K → focus search input
-            if (mod && e.key && e.key.toLowerCase() === "k") {
-                e.preventDefault();
-                searchInput.focus();
-                return;
-            }
-
-            // Ctrl/Cmd + L → focus + select all text in input
-            if (mod && e.key && e.key.toLowerCase() === "l") {
-                e.preventDefault();
-                searchInput.focus();
-                // small timeout to ensure focus before select
-                setTimeout(() => {
-                    searchInput.select();
-                }, 0);
-                return;
-            }
-        });
-
-        // 🔹 Focus/blur par search-box animation
-        searchInput.addEventListener("focus", function () {
-            if (searchBox) {
-                searchBox.classList.add("focused");
-            }
-        });
-
-        searchInput.addEventListener("blur", function () {
-            if (searchBox) {
-                searchBox.classList.remove("focused");
-            }
-        });
-
-        // Type karte wart update
-        searchInput.addEventListener("input", function () {
-            const text = this.value.trim();
-            updateSuggestion(text);
-
-            // Clear button show/hide
-            if (text.length > 0) {
-                clearBtn.style.display = "inline";
-            } else {
-                clearBtn.style.display = "none";
-            }
-
-            // Agar user type kare → mic listening band + placeholder normal + border normal
-            if (micIcon && micIcon.classList.contains("listening")) {
+            if (micIcon) {
                 micIcon.classList.remove("listening");
             }
-            if (micIcon) {
-                micIcon.style.borderColor = "#eca50b";
-            }
-            searchInput.placeholder = DEFAULT_PLACEHOLDER;
-
-            if (recognition) {
-                try {
-                    recognition.stop();
-                } catch (e) {
-                    // ignore
-                }
-            }
-            isMicOn = false;
-        });
-
-        function updateSuggestion(text) {
-            if (!text) {
-                suggestionBox.innerHTML = "";
-                suggestionBox.classList.remove("show"); // 🔹 hide animation
-                return;
-            }
-            suggestionBox.innerHTML = `Search for: <span class="query">${escapeHTML(text)}</span>`;
-
-            // 🔹 trigger animation
-            requestAnimationFrame(() => {
-                suggestionBox.classList.add("show");
-            });
         }
 
-        // ❌ Clear button click → text + suggestion clear
-        clearBtn.addEventListener("click", function () {
-            searchInput.value = "";
-            suggestionBox.innerHTML = "";
-            suggestionBox.classList.remove("show"); // 🔹 hide
-            clearBtn.style.display = "none";
-            searchInput.placeholder = DEFAULT_PLACEHOLDER;
+        searchInput.placeholder = DEFAULT_PLACEHOLDER;
 
-            // Safety: mic ko normal state me rakho
-            if (micIcon) {
-                micIcon.classList.remove("listening");
-                micIcon.style.borderColor = "#eca50b";
-            }
-            if (recognition) {
-                try {
-                    recognition.stop();
-                } catch (e) {}
-            }
-            isMicOn = false;
-            searchInput.focus();
-        });
+        if (searchInput.value.trim().length > 0) {
+            clearBtn.classList.add('visible');
+        }
+    };
 
-        // 🎤 VOICE SEARCH
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition.onerror = function (event) {
+        console.error("Voice error:", event.error);
+        isVoiceActive = false;
+        isRecognitionRunning = false;
 
-        if (SpeechRecognition) {
-            recognition = new SpeechRecognition();
-            recognition.lang = "en-IN";
-            recognition.interimResults = false;
-            recognition.continuous = false;
-
-            recognition.onresult = function (event) {
-                const transcript = event.results[0][0].transcript;
-                searchInput.value = transcript;
-
-                // Mic se bola → text set → bina Enter dabaye direct search
-                runSearchFromVoice(transcript);
-            };
-
-            // 🎧 Mic khatam hone par listening state hatao
-            recognition.onend = function () {
-                isMicOn = false;
-                if (micIcon) {
-                    micIcon.classList.remove("listening");
-                    micIcon.style.borderColor = "#eca50b";
-                }
-            };
-
-            recognition.onerror = function (event) {
-                console.error("Voice error:", event.error);
-                isMicOn = false;
-                if (micIcon) {
-                    micIcon.classList.remove("listening");
-                    micIcon.style.borderColor = "red"; // error pe red border
-                }
-
-                // Placeholder me hi error message
-                searchInput.placeholder = "Voice access unavailable.";
-
-                // Suggestion box clear (optional)
-                suggestionBox.innerHTML = "";
-                suggestionBox.classList.remove("show"); // 🔹 hide
-            };
+        if (micIcon) {
+            micIcon.classList.remove("listening");
         }
 
-        // 🔥 Toggle mic on each click
-        function startVoice() {
-            if (!recognition) {
-                alert("Voice search is not supported.");
-                return;
-            }
+        searchInput.placeholder = "Voice access unavailable";
+        clearBtn.classList.add('visible');
 
-            // If mic already ON -> turn OFF
-            if (isMicOn) {
-                isMicOn = false;
-                if (micIcon) {
-                    micIcon.classList.remove("listening");
-                    micIcon.style.borderColor = "#eca50b";
-                }
+        setTimeout(() => {
+            if (searchInput.value.trim().length === 0) {
                 searchInput.placeholder = DEFAULT_PLACEHOLDER;
-                try {
-                    recognition.stop();
-                } catch (e) {
-                    // ignore
-                }
-                return;
+                clearBtn.classList.remove('visible');
+            }
+        }, 3000);
+    };
+}
+
+function startVoice() {
+    if (!recognition) {
+        alert("Voice search is not supported in your browser.");
+        return;
+    }
+
+    if (isVoiceActive || isRecognitionRunning) {
+        isVoiceActive = false;
+
+        if (micIcon) {
+            micIcon.classList.remove("listening");
+        }
+
+        searchInput.placeholder = DEFAULT_PLACEHOLDER;
+
+        try {
+            recognition.stop();
+        } catch (e) {
+            // Ignore error
+        }
+
+        return;
+    }
+
+    isVoiceActive = true;
+
+    if (micIcon) {
+        micIcon.classList.add("listening");
+    }
+
+    searchInput.placeholder = "Listening...";
+    clearBtn.classList.add('visible');
+    hideHistoryDropdown();
+
+    try {
+        recognition.stop();
+    } catch (e) {
+        // Ignore error
+    }
+
+    setTimeout(() => {
+        try {
+            recognition.start();
+        } catch (err) {
+            console.error("Recognition start failed:", err);
+            isVoiceActive = false;
+
+            if (micIcon) {
+                micIcon.classList.remove("listening");
             }
 
-            // If mic OFF -> turn ON
-            isMicOn = true;
-            if (micIcon) {
-                micIcon.classList.add("listening");
-                micIcon.style.borderColor = "#eca50b";
-            }
-            searchInput.placeholder = "Listening...";
-            try {
-                recognition.start();
-            } catch (err) {
-                console.error("recognition.start() failed:", err);
-                // revert state on failure
-                isMicOn = false;
-                if (micIcon) {
-                    micIcon.classList.remove("listening");
-                    micIcon.style.borderColor = "red";
-                }
-                searchInput.placeholder = "Voice start failed.";
+            searchInput.placeholder = "Voice start failed";
+
+            setTimeout(() => {
+                searchInput.placeholder = DEFAULT_PLACEHOLDER;
+            }, 3000);
+        }
+    }, 100);
+}
+
+// ============================================
+// CLEAR BUTTON LOGIC
+// ============================================
+function handleClear() {
+    searchInput.value = "";
+    searchInput.placeholder = DEFAULT_PLACEHOLDER;
+    clearBtn.classList.remove('visible');
+
+    if (isVoiceActive && recognition) {
+        isVoiceActive = false;
+        isRecognitionRunning = false;
+
+        if (micIcon) {
+            micIcon.classList.remove("listening");
+        }
+
+        try {
+            recognition.stop();
+        } catch (e) {
+            // Ignore
+        }
+    }
+
+    searchInput.focus();
+    renderHistoryDropdown("");
+}
+
+// ============================================
+// EVENT LISTENERS
+// ============================================
+
+searchInput.addEventListener("focus", function () {
+    if (searchBox) {
+        searchBox.classList.add("focused");
+    }
+
+    if (searchInput.value.trim().length === 0) {
+        showHistoryDropdown();
+    }
+});
+
+// BUG FIX: Remove focused class on blur
+searchInput.addEventListener("blur", function () {
+    if (searchBox) {
+        searchBox.classList.remove("focused");
+    }
+    
+    setTimeout(() => {
+        if (historyDropdown.contains(document.activeElement)) return;
+        hideHistoryDropdown();
+    }, 200);
+});
+
+searchInput.addEventListener("input", function () {
+    const text = this.value.trim();
+
+    if (text.length > 0) {
+        clearBtn.classList.add("visible");
+    } else {
+        clearBtn.classList.remove("visible");
+    }
+
+    renderHistoryDropdown(text);
+
+    if (isVoiceActive && recognition) {
+        try { recognition.stop(); } catch (e) { }
+        micIcon.classList.remove("listening");
+        isVoiceActive = false;
+        isRecognitionRunning = false;
+        searchInput.placeholder = DEFAULT_PLACEHOLDER;
+    }
+});
+
+searchInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.keyCode === 13) {
+        const query = searchInput.value.trim();
+        if (!query) return;
+
+        if (e.shiftKey) {
+            executeSearch(query, true);
+            return;
+        }
+
+        executeSearch(query, false);
+    }
+});
+
+clearBtn.addEventListener("click", handleClear);
+
+document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+        handleClear();
+        return;
+    }
+
+    const mod = e.ctrlKey || e.metaKey;
+
+    if (mod && e.key && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        searchInput.focus();
+        return;
+    }
+
+    if (mod && e.key && e.key.toLowerCase() === "l") {
+        e.preventDefault();
+        searchInput.focus();
+        setTimeout(() => {
+            searchInput.select();
+        }, 0);
+        return;
+    }
+});
+
+if (historyDropdown) {
+    // Prevent input blur when clicking inside history
+    historyDropdown.addEventListener("mousedown", function (e) {
+        e.preventDefault();
+    });
+
+    historyDropdown.addEventListener('click', function (e) {
+        if (e.target.classList.contains('history-text')) {
+            const query = e.target.getAttribute('data-query');
+            if (query) {
+                searchInput.value = query;
+                executeSearch(query, false);
             }
         }
-            
-        /* =========================
-            TOP RIGHT MENU LOGIC
-           ========================= */
 
+        if (e.target.classList.contains('history-delete')) {
+            e.stopPropagation();
+            const query = e.target.getAttribute('data-query');
+            if (query) {
+                deleteHistoryItem(query);
+            }
+        }
+    });
+}
+
+document.addEventListener("click", function (e) {
+    if (!searchContainer.contains(e.target)) {
+        hideHistoryDropdown();
+    }
+});
+
+// ============================================
+// MENU FUNCTIONALITY
+// ============================================
 const menuBtn = document.getElementById("menuBtn");
 const menu = document.getElementById("menu");
 
 if (menuBtn && menu) {
-
-    // menu toggle
     menuBtn.addEventListener("click", function (e) {
         e.stopPropagation();
         menu.classList.toggle("show");
     });
 
-    // menu ke andar click -> close na ho
-    menu.addEventListener("click", function (e) {
-        e.stopPropagation();
+    menuBtn.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            e.stopPropagation();
+            menu.classList.toggle("show");
+        }
     });
 
-    // bahar click -> menu band
-    document.addEventListener("click", function () {
-        menu.classList.remove("show");
+    const menuItems = menu.querySelectorAll('.menu-item');
+    menuItems.forEach(item => {
+        item.addEventListener('click', function () {
+            menu.classList.remove('show');
+        });
+    });
+
+    document.addEventListener("click", function (e) {
+        if (!menuBtn.contains(e.target)) {
+            menu.classList.remove("show");
+        }
     });
 }
 
-
-
-/* --- DARK MODE LOADER (Sabse Upar Paste Karein) --- */
-const savedTheme = localStorage.getItem('theme');
+// ============================================
+// THEME INITIALIZATION
+// ============================================
+const savedTheme = storage.get('theme');
 if (savedTheme === 'dark') {
     document.body.classList.add('dark-mode');
 }
 
-/* ... Iske niche aapka purana search code ... */
-document.addEventListener("DOMContentLoaded", () => {
-    // ... baaki sara code ...
-});
+function renderHistoryHTML(list) {
+    let html = "";
+
+    list.forEach(item => {
+        html += `
+            <div class="history-item" role="menuitem">
+                <div class="history-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </div>
+
+                <div class="history-text" data-query="${escapeHTML(item)}">
+                    ${escapeHTML(item)}
+                </div>
+
+                <button class="history-delete"
+                        data-query="${escapeHTML(item)}">×</button>
+            </div>
+        `;
+    });
+
+    historyDropdown.innerHTML = html;
+}

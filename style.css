@@ -1,204 +1,361 @@
-        /* 🎨 Color variables (default = light mode) */
-        :root {
-            --bg-color: #ffffff;
-            --text-color: #111111;
-            --title-color: #f3b407;
-            --card-bg: #ffffff;
-            --placeholder-color: #3f3e3e;
-            --shadow-color: rgba(17, 17, 17, 0.2);
-            --mic-border: #eca50b;
-            --suggestion-text: #555555;
-        }
+/* ============================================
+   COLOR VARIABLES
+   ============================================ */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #111111;
+    --title-color: #f3b407;
+    --card-bg: #ffffff;
+    --placeholder-color: #666666;
+    --shadow-color: rgba(0, 0, 0, 0.15);
+    --mic-border: #eca50b;
+    --history-hover: rgba(0, 0, 0, 0.05);
+    --border-color: #eeeeee;
+    --icon-color: #5f6368;
+}
 
-        body {
-            margin: 0;
-            height: calc(100dvh - 120px);
-            background: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            font-family: Arial, sans-serif;
-            padding-top: 120px;
-            overflow: auto;
-        }
+body.dark-mode {
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --title-color: #ffca28;
+    --card-bg: #1e1e1e;
+    --placeholder-color: #888888;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --mic-border: #ffca28;
+    --history-hover: rgba(255, 255, 255, 0.1);
+    --border-color: #333333;
+    --icon-color: #9aa0a6;
+}
 
-        .title {
-            font-size: 85px;
-            font-weight: bold;
-            color: var(--title-color);
-            letter-spacing: -2px;
-            margin-bottom: 45px;
-        }
+/* ============================================
+   BASE STYLES
+   ============================================ */
+* {
+    box-sizing: border-box;
+}
 
-        .search-box {
-            width: 90%;
-            max-width: 600px;
-            background: var(--card-bg);
-            border-radius: 50px;
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 2px 6px var(--shadow-color);
-            transition: box-shadow 0.2s ease, transform 0.2s ease; /* 🔹 focus animation */
-            cursor: text; /* ADDED: whole box feels clickable */
-        }
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    padding-top: 120px;
+    transition: background 0.3s ease, color 0.3s ease;
+}
 
-        /* 🔹 Focused state for search box */
-        .search-box.focused {
-            box-shadow: 0 4px 14px var(--shadow-color);
-            transform: translateY(-1px);
-        }
+/* ============================================
+   TITLE
+   ============================================ */
+.title {
+    font-size: 85px;
+    font-weight: bold;
+    color: var(--title-color);
+    letter-spacing: -2px;
+    margin-bottom: 45px;
+    user-select: none;
+}
 
-        #searchInput {
-            flex: 1;
-            font-size: 17px;
-            border: none;
-            outline: none;
-            background: transparent;
-            color: var(--text-color);
-        }
+/* ============================================
+   SEARCH CONTAINER (unified box)
+   ============================================ */
+.search-container {
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+}
 
-        #searchInput::placeholder {
-            color: var(--placeholder-color);
-            transition: color 0.2s ease, opacity 0.15s ease; /* halka smooth feel */
-        }
+/* Main search box */
+.search-box {
+    width: 100%;
+    background: var(--card-bg);
+    border-radius: 50px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 6px var(--shadow-color);
+    transition: box-shadow 0.2s ease, transform 0.2s ease, border-radius 0.3s ease;
+    cursor: text;
+    position: relative;
+    z-index: 2;
+}
 
-        .mic-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: var(--card-bg);
-            border: 2px solid var(--mic-border);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease;
-        }
+/* When history is open, round only top corners */
+.search-container.history-open .search-box {
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 2px 6px var(--shadow-color);
+}
 
-        /* 🔹 Mic hover / tap animation */
-        .mic-icon:hover {
-            transform: scale(1.08);
-            box-shadow: 0 0 8px var(--shadow-color);
-        }
+/* Focused state */
+.search-box.focused {
+    box-shadow: 0 4px 14px var(--shadow-color);
+    transform: translateY(-1px);
+}
 
-        .mic-icon:active {
-            transform: scale(0.96);
-            box-shadow: 0 0 4px var(--shadow-color);
-        }
+.search-container.history-open .search-box.focused {
+    transform: translateY(0);
+}
 
-        .google-mic {
-            position: relative;
-            width: 6px;
-            height: 10px;
-            background: var(--text-color);
-            border-radius: 999px;
-            top: -1px;
-        }
+/* ============================================
+   SEARCH ICON (left)
+   ============================================ */
+.search-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--icon-color);
+    flex-shrink: 0;
+}
 
-        .google-mic::before {
-            content: "";
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 6px;
-            width: 10px;
-            height: 5px;
-            border: 1.5px solid var(--text-color);
-            border-top: none;
-            border-radius: 0 0 8px 8px;
-        }
+.search-icon svg {
+    width: 18px;
+    height: 18px;
+}
 
-        .google-mic::after {
-            content: "";
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 11px;
-            width: 2px;
-            height: 4px;
-            background: var(--text-color);
-            border-radius: 2px;
-        }
+/* ============================================
+   INPUT FIELD
+   ============================================ */
+#searchInput {
+    flex: 1;
+    font-size: 18px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text-color);
+    font-family: inherit;
+}
 
-        /* Clear (X) button */
-        #clearBtn {
-            border: none;
-            background: transparent;
-            font-size: 16px;
-            cursor: pointer;
-            display: none; /* default me hidden */
-            padding: 0 4px;
-            line-height: 1;
-            color: var(--placeholder-color);
-        }
+#searchInput::placeholder {
+    color: var(--placeholder-color);
+    font-size: 18px;
+}
 
-        /* Niche suggestion box */
-        #suggestionBox {
-            width: 90%;
-            max-width: 600px;
-            font-size: 14px;
-            color: var(--suggestion-text);
-            margin-top: 8px;
-            font-family: Arial, sans-serif;
-            opacity: 0;                     /* 🔹 animation default */
-            transform: translateY(4px);     /* halka neeche */
-            transition: opacity 0.18s ease, transform 0.18s ease;
-        }
+/* ============================================
+   MIC ICON
+   ============================================ */
+.mic-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    border: 2px solid var(--mic-border);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
 
-        /* 🔹 Visible state for suggestion (fade + slide-up) */
-        #suggestionBox.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
+.mic-icon:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 8px var(--shadow-color);
+}
 
-        #suggestionBox span.query {
-            font-weight: bold;
-            color: var(--text-color);
-        }
+.mic-icon:active {
+    transform: scale(0.96);
+}
 
-        /* 🎧 Mic listening state – soft pulsing circle, icon visible */
-        .mic-icon.listening {
-            background: #ffe8b3;
-            border-color: var(--mic-border);
-            animation: mic-pulse 1s ease-in-out infinite;
-            box-shadow: 0 0 0 0 rgba(236,165,11,0.4);
-        }
+.google-mic {
+    position: relative;
+    width: 6px;
+    height: 10px;
+    background: var(--text-color);
+    border-radius: 999px;
+    top: -1px;
+}
 
-        @keyframes mic-pulse {
-            0% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(236,165,11,0.4);
-            }
-            50% {
-                transform: scale(1.08);
-                box-shadow: 0 0 0 8px rgba(236,165,11,0);
-            }
-            100% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(236,165,11,0.0);
-            }
-        }
+.google-mic::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 6px;
+    width: 10px;
+    height: 5px;
+    border: 1.5px solid var(--text-color);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+}
 
-        /* Mobile view thoda compact */
-        @media (max-width: 600px) {
-            body {
-                padding-top: 80px;
-            }
-            .title {
-                font-size: 60px;
-            }
-        }
+.google-mic::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 11px;
+    width: 2px;
+    height: 4px;
+    background: var(--text-color);
+    border-radius: 2px;
+}
 
-        /* =========================
-        TOP RIGHT MENU (GOOGLE STYLE)
-        ========================= */
+/* Listening state */
+.mic-icon.listening {
+    background: #ffe8b3;
+    border-color: var(--mic-border);
+    animation: mic-pulse 1s ease-in-out infinite;
+}
 
+body.dark-mode .mic-icon.listening {
+    background: rgba(255, 202, 40, 0.2);
+}
+
+@keyframes mic-pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(236, 165, 11, 0.4);
+    }
+
+    50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 0 8px rgba(236, 165, 11, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(236, 165, 11, 0);
+    }
+}
+
+/* ============================================
+   CLEAR BUTTON
+   ============================================ */
+#clearBtn {
+    border: none;
+    background: transparent;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    color: var(--icon-color);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, color 0.2s ease;
+    flex-shrink: 0;
+}
+
+#clearBtn.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#clearBtn:hover {
+    color: var(--text-color);
+}
+
+/* ============================================
+   HISTORY DROPDOWN (Chrome style)
+   ============================================ */
+.history-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    border-radius: 0 0 24px 24px;
+    box-shadow: 0 4px 6px var(--shadow-color);
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+    z-index: 1;
+    margin-top: -2px;
+}
+
+.history-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* History item */
+.history-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    border-top: 1px solid var(--border-color);
+}
+
+.history-item:first-child {
+    border-top: none;
+    padding-top: 14px;
+}
+
+.history-item:last-child {
+    padding-bottom: 14px;
+}
+
+.history-item:hover {
+    background: var(--history-hover);
+}
+
+/* Clock icon */
+.history-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--icon-color);
+    flex-shrink: 0;
+}
+
+.history-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* History text */
+.history-text {
+    flex: 1;
+    font-size: 16px;
+    color: var(--text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Delete button */
+.history-delete {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    color: var(--icon-color);
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+    transition: opacity 0.15s ease, background 0.15s ease;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.history-delete:hover {
+    opacity: 1;
+    background: var(--history-hover);
+}
+
+/* ============================================
+   TOP RIGHT MENU
+   ============================================ */
 .top-menu {
     position: fixed;
     top: 16px;
@@ -206,29 +363,23 @@
     z-index: 2000;
 }
 
-/* ☰ button */
 .menu-btn {
     font-size: 22px;
     cursor: pointer;
     user-select: none;
-    padding: 6px 10px;
+    padding: 8px 12px;
     border-radius: 50%;
     color: var(--text-color);
-}
-
-.menu a {
-    text-decoration: none;
-    color: inherit;
+    transition: background 0.15s ease;
 }
 
 .menu-btn:hover {
-    background: rgba(0, 0, 0, 0.08);
+    background: var(--history-hover);
 }
 
-/* dropdown panel */
 .menu {
     position: absolute;
-    top: 40px;
+    top: 48px;
     right: 0;
     background: var(--card-bg);
     box-shadow: 0 8px 24px var(--shadow-color);
@@ -238,49 +389,57 @@
     display: none;
 }
 
-/* show state */
 .menu.show {
     display: flex;
     flex-direction: column;
 }
 
-/* menu items */
 .menu-item {
     padding: 12px 18px;
     cursor: pointer;
     font-size: 14px;
     color: var(--text-color);
+    text-decoration: none;
+    transition: background 0.15s ease;
 }
 
 .menu-item:hover {
-    background: rgba(0, 0, 0, 0.06);
+    background: var(--history-hover);
 }
 
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 600px) {
+    body {
+        padding-top: 80px;
+    }
 
-/* --- 1. Variables (Default Light) --- */
-:root {
-    --bg-color: #ffffff;
-    --text-color: #111111;
-    --title-color: #f3b407;
-    --card-bg: #ffffff;
-    --placeholder-color: #666666;
-    --shadow-color: rgba(0, 0, 0, 0.15);
-    --mic-border: #eca50b;
-    --suggestion-text: #555555;
-    --hover-bg: rgba(0, 0, 0, 0.05);
+    .title {
+        font-size: 60px;
+        margin-bottom: 35px;
+    }
+
+    .search-box {
+        padding: 12px 16px;
+    }
+
+    #searchInput,
+    #searchInput::placeholder {
+        font-size: 16px;
+    }
+
+    .history-item {
+        padding: 10px 16px;
+    }
+
+    .history-delete {
+        opacity: 1;
+    }
 }
 
-/* --- 2. Dark Mode Support (Ye zaroor add karein) --- */
-body.dark-mode {
-    --bg-color: #121212;
-    --text-color: #e0e0e0;
-    --title-color: #ffca28;
-    --card-bg: #1e1e1e;
-    --placeholder-color: #888888;
-    --shadow-color: rgba(0, 0, 0, 0.5);
-    --mic-border: #ffca28;
-    --suggestion-text: #aaaaaa;
-    --hover-bg: rgba(255, 255, 255, 0.1);
+@media (max-width: 400px) {
+    .title {
+        font-size: 48px;
+    }
 }
-
-/* ... Baaki CSS same rahega ... */

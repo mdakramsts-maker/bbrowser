@@ -1,105 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings</title>
-    
+    <title>Settings - Browser</title>
+
     <style>
-        /* ============================
-           1. UI THEME VARIABLES (MATCHED WITH HOME)
-           ============================ */
         :root {
-            /* Light Mode (Default) */
             --bg-color: #ffffff;
             --text-color: #111111;
             --card-bg: #ffffff;
             --shadow-color: rgba(0, 0, 0, 0.15);
-            --toggle-off: #ccc;
-            --toggle-on: #f3b407; /* Yellow/Gold Theme Color */
+            --accent-color: #f3b407;
             --border-color: #eeeeee;
+            --text-muted: #666666;
+            --hover-bg: rgba(0, 0, 0, 0.05);
         }
 
-        /* Dark Mode Colors */
         body.dark-mode {
             --bg-color: #121212;
             --text-color: #e0e0e0;
             --card-bg: #1e1e1e;
             --shadow-color: rgba(0, 0, 0, 0.5);
-            --toggle-on: #ffca28;
+            --accent-color: #ffca28;
             --border-color: #333333;
+            --text-muted: #888888;
+            --hover-bg: rgba(255, 255, 255, 0.1);
         }
 
-        /* ============================
-           2. LAYOUT & DESIGN
-           ============================ */
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            min-height: 100vh;
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start; /* Top align thoda sa */
-            padding-top: 60px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
             transition: background 0.3s ease, color 0.3s ease;
         }
 
-        .settings-box {
-            background: var(--card-bg);
-            width: 100%;
-            max-width: 450px; /* Compact width like mobile app */
-            padding: 25px;
-            border-radius: 20px; /* Rounded card */
-            box-shadow: 0 10px 30px var(--shadow-color);
-            transition: background 0.3s ease, box-shadow 0.3s ease;
+        .settings-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0;
         }
 
-        /* Header Style */
+        /* Header */
         .settings-header {
+            position: sticky;
+            top: 0;
+            background-color: var(--bg-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 24px;
+            z-index: 100;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
-            margin-bottom: 20px;
         }
 
-        .settings-header h2 {
-            margin: 0;
+        .header-title {
             font-size: 24px;
-            font-weight: bold;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0;
+            letter-spacing: -0.3px;
         }
 
         .close-btn {
             text-decoration: none;
-            font-size: 32px;
+            font-size: 28px;
             color: var(--text-color);
-            line-height: 0.8;
-            font-weight: bold;
-            transition: opacity 0.2s;
-        }
-        .close-btn:hover {
-            opacity: 0.7;
+            line-height: 1;
+            font-weight: 300;
+            opacity: 0.6;
+            transition: opacity 0.2s ease;
+            cursor: pointer;
+            padding: 4px;
         }
 
-        /* Row Style */
+        .close-btn:hover {
+            opacity: 1;
+        }
+
+        /* Settings Content */
+        .settings-content {
+            padding: 0;
+        }
+
+        .settings-section {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .settings-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-header {
+            padding: 24px 24px 12px 24px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .settings-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
         .setting-item {
+            padding: 16px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
+            transition: background 0.15s ease;
+            min-height: 64px;
         }
 
-        .label-text {
-            font-size: 18px;
+        .setting-item:hover {
+            background: var(--hover-bg);
+        }
+
+        .setting-info {
+            flex: 1;
+            padding-right: 16px;
+        }
+
+        .setting-label {
+            font-size: 16px;
             font-weight: 500;
+            color: var(--text-color);
+            margin: 0 0 4px 0;
+            line-height: 1.4;
         }
 
-        /* ============================
-           3. TOGGLE SWITCH DESIGN
-           ============================ */
+        .setting-description {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .setting-control {
+            flex-shrink: 0;
+        }
+
+        /* Toggle Switch */
         .switch {
             position: relative;
             display: inline-block;
@@ -116,94 +176,242 @@
         .slider {
             position: absolute;
             cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: var(--toggle-off);
-            transition: .3s;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
             border-radius: 34px;
         }
 
         .slider:before {
             position: absolute;
             content: "";
-            height: 20px; width: 20px;
-            left: 4px; bottom: 4px;
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
             background-color: white;
-            transition: .3s;
+            transition: 0.3s;
             border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
-        /* ON State */
-        input:checked + .slider {
-            background-color: var(--toggle-on);
+        input:checked+.slider {
+            background-color: var(--accent-color);
         }
 
-        input:checked + .slider:before {
+        input:checked+.slider:before {
             transform: translateX(24px);
+        }
+
+        /* Select Dropdown */
+        select {
+            min-width: 200px;
+            padding: 8px 32px 8px 12px;
+            font-size: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+            font-family: inherit;
+            outline: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+
+        body.dark-mode select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        }
+
+        select:hover {
+            border-color: var(--accent-color);
+        }
+
+        select:focus {
+            border-color: var(--accent-color);
+        }
+
+        /* Footer */
+        .settings-footer {
+            padding: 32px 24px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer-version {
+            margin-bottom: 8px;
+        }
+
+        .footer-credits {
+            opacity: 0.8;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .settings-header {
+                padding: 16px 20px;
+            }
+
+            .header-title {
+                font-size: 20px;
+            }
+
+            .section-header {
+                padding: 20px 20px 8px 20px;
+            }
+
+            .setting-item {
+                padding: 14px 20px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .setting-info {
+                padding-right: 0;
+            }
+
+            .setting-control {
+                width: 100%;
+            }
+
+            select {
+                width: 100%;
+                min-width: 0;
+            }
         }
     </style>
 </head>
+
 <body>
 
-    <div class="settings-box">
-        <div class="settings-header">
-            <h2>Settings</h2>
-            <a href="index.html" class="close-btn">&times;</a>
-        </div>
+    <div class="settings-wrapper">
+        <header class="settings-header">
+            <div class="header-content">
+                <h1 class="header-title">Settings</h1>
+                <a href="index.html" class="close-btn" aria-label="Close">×</a>
+            </div>
+        </header>
 
-        <div class="setting-item">
-            <span id="themeLabel" class="label-text">Dark Mode</span>
-            
-            <label class="switch">
-                <input type="checkbox" id="darkModeToggle">
-                <span class="slider"></span>
-            </label>
-        </div>
+        <main class="settings-content">
+            <section class="settings-section">
+                <div class="section-header">
+                    <h2 class="section-title">Appearance</h2>
+                </div>
+                <ul class="settings-list">
+                    <li class="setting-item">
+                        <div class="setting-info">
+                            <p class="setting-label" id="themeLabel">Dark Mode</p>
+                            <p class="setting-description">Choose between light and dark theme</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="switch">
+                                <input type="checkbox" id="darkModeToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="settings-section">
+                <div class="section-header">
+                    <h2 class="section-title">Search</h2>
+                </div>
+                <ul class="settings-list">
+                    <li class="setting-item">
+                        <div class="setting-info">
+                            <p class="setting-label">Search Engine</p>
+                            <p class="setting-description">Choose your default search engine</p>
+                        </div>
+                        <div class="setting-control">
+                            <select id="searchEngineSelect">
+                                <option value="google">Google</option>
+                                <option value="duckduckgo">DuckDuckGo</option>
+                                <option value="bing">Bing</option>
+                                <option value="brave">Brave Search</option>
+                                <option value="yahoo">Yahoo</option>
+                                <option value="startpage">Startpage</option>
+                                <option value="ecosia">Ecosia</option>
+                            </select>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+        </main>
+
+        <footer class="settings-footer">
+            <div class="footer-version">Browser Core v1.0</div>
+            <div class="footer-credits">Made by Akram</div>
+        </footer>
     </div>
 
     <script>
+        const storage = {
+            get: (key) => {
+                try {
+                    return localStorage.getItem(key);
+                } catch (e) {
+                    console.error('localStorage error:', e);
+                    return null;
+                }
+            },
+            set: (key, value) => {
+                try {
+                    localStorage.setItem(key, value);
+                } catch (e) {
+                    console.error('localStorage error:', e);
+                }
+            }
+        };
+
         const toggleBtn = document.getElementById('darkModeToggle');
         const themeLabel = document.getElementById('themeLabel');
+        const searchEngineSelect = document.getElementById('searchEngineSelect');
         const body = document.body;
 
-        // Function: Text Update karne ke liye
         function updateLabel(isDark) {
-            if (isDark) {
-                themeLabel.textContent = "Light Mode"; // Agar Dark on hai, to switch 'Light' ke liye hoga
-            } else {
-                themeLabel.textContent = "Dark Mode";  // Agar Light on hai, to switch 'Dark' ke liye hoga
-            }
+            themeLabel.textContent = isDark ? "Light Mode" : "Dark Mode";
         }
 
-        // 1. PAGE LOAD: Check karo saved theme kya hai
-        const currentTheme = localStorage.getItem('theme');
-
+        const currentTheme = storage.get('theme');
         if (currentTheme === 'dark') {
             body.classList.add('dark-mode');
             toggleBtn.checked = true;
             updateLabel(true);
         } else {
-            // Default Light mode
-            body.classList.remove('dark-mode');
-            toggleBtn.checked = false;
             updateLabel(false);
         }
 
-        // 2. TOGGLE EVENT: Jab switch dabayein
-        toggleBtn.addEventListener('change', function() {
+        toggleBtn.addEventListener('change', function () {
             if (this.checked) {
-                // ---> Switch ON (Dark Mode)
                 body.classList.add('dark-mode');
-                localStorage.setItem('theme', 'dark');
+                storage.set('theme', 'dark');
                 updateLabel(true);
             } else {
-                // ---> Switch OFF (Light Mode)
                 body.classList.remove('dark-mode');
-                localStorage.setItem('theme', 'light');
+                storage.set('theme', 'light');
                 updateLabel(false);
             }
+        });
+
+        const savedEngine = storage.get('searchEngine');
+        if (savedEngine && ['google', 'duckduckgo', 'bing', 'brave', 'yahoo', 'startpage', 'ecosia'].includes(savedEngine)) {
+            searchEngineSelect.value = savedEngine;
+        }
+
+        searchEngineSelect.addEventListener('change', function () {
+            storage.set('searchEngine', this.value);
         });
     </script>
 
 </body>
+
 </html>
