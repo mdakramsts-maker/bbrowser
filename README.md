@@ -1,24 +1,16 @@
-# Browser Core
+Browser Core is a lightweight, privacy-first start page designed to bring the web back to basics — fast, clean, and distraction-free. No tracking. No ads. No analytics.
 
-Browser Core is a lightweight, privacy-first start page designed to bring the web back to basics — fast, clean, and distraction-free.
-
-No tracking. No ads. No analytics.
-
----
-
-## ✨ Features
-
-- ⚡ Ultra-fast search experience
-- 🔐 Privacy-first (no data sent to any server)
-- 🎤 Voice search support (browser dependent)
-- 🕘 Search history stored locally
-- 🌗 Light & Dark mode
-- 📱 Fully responsive (mobile & desktop)
-- 🔍 Multiple search engines supported
+- Ultra-fast search experience
+- Privacy-first (no data sent to any server)
+- Voice search support (browser dependent)
+- Search history stored locally
+- Light & Dark mode
+- Fully responsive (mobile & desktop)
+- Multiple search engines supported
 
 ---
 
-## 🌐 Supported Search Engines
+Supported Search Engines
 
 - Google  
 - DuckDuckGo  
@@ -30,8 +22,6 @@ No tracking. No ads. No analytics.
 
 ---
 
-## 🧠 How It Works
-
 - Built using **HTML, CSS, and Vanilla JavaScript**
 - Uses **localStorage** for settings and history
 - No backend, no database
@@ -39,7 +29,7 @@ No tracking. No ads. No analytics.
 
 ---
 
-## ⚠️ Notes
+Notes
 
 - Voice search depends on browser support  
   (Works best on Chrome & Chromium browsers)
@@ -47,12 +37,9 @@ No tracking. No ads. No analytics.
 
 ---
 
-## 📁 Project Structure
+  Project Structure
 
-
----
-
-## 🚀 Live Usage
+Live Usage
 
 You can use this as:
 - A browser start page
@@ -61,7 +48,6 @@ You can use this as:
 
 ---
 
-## 👤 Author
+Author
 
-Made with ❤️ by **Akram**
-
+Made by **Akram**

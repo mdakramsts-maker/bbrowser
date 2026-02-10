@@ -426,7 +426,7 @@ searchInput.addEventListener("blur", function () {
     if (searchBox) {
         searchBox.classList.remove("focused");
     }
-    
+
     setTimeout(() => {
         if (historyDropdown.contains(document.activeElement)) return;
         hideHistoryDropdown();
