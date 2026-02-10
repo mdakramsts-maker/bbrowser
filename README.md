@@ -37,10 +37,6 @@ Notes
 
 ---
 
-  Project Structure
-
-Live Usage
-
 You can use this as:
 - A browser start page
 - A personal search homepage
