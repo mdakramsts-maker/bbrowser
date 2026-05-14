@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About - Browser</title>
+    <title>About - Browser Core</title>
 
     <style>
         :root {
@@ -13,9 +12,9 @@
             --card-bg: #ffffff;
             --shadow-color: rgba(0, 0, 0, 0.15);
             --accent-color: #f3b407;
-            --accent-light: #fff4d6;
             --border-color: #eeeeee;
             --text-muted: #666666;
+            --hover-bg: #f9f9f9;
         }
 
         body.dark-mode {
@@ -24,9 +23,9 @@
             --card-bg: #1e1e1e;
             --shadow-color: rgba(0, 0, 0, 0.5);
             --accent-color: #ffca28;
-            --accent-light: rgba(255, 202, 40, 0.15);
             --border-color: #333333;
             --text-muted: #888888;
+            --hover-bg: #2a2a2a;
         }
 
         * {
@@ -35,7 +34,6 @@
 
         body {
             margin: 0;
-            padding: 20px;
             min-height: 100vh;
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -43,11 +41,11 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding-top: 60px;
+            padding: 60px 20px 20px;
             transition: background 0.3s ease, color 0.3s ease;
         }
 
-        .about-container {
+        .container {
             width: 100%;
             max-width: 640px;
         }
@@ -103,13 +101,14 @@
         .hero-subtitle {
             font-size: 16px;
             color: rgba(255, 255, 255, 0.95);
-            margin: 0;
+            margin: 0 auto;
+            max-width: 90%;
             line-height: 1.6;
             font-weight: 400;
         }
 
-        /* Features Section */
-        .features-section {
+        /* Content Cards */
+        .content-card {
             background: var(--card-bg);
             border-radius: 16px;
             padding: 32px;
@@ -123,16 +122,26 @@
             color: var(--text-color);
             margin: 0 0 24px 0;
             text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
         }
 
+        /* Features Grid */
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 20px;
         }
 
         .feature-item {
             text-align: center;
+            padding: 16px;
+            border-radius: 12px;
+            transition: background 0.2s ease;
+        }
+
+        .feature-item:hover {
+            background: var(--hover-bg);
         }
 
         .feature-title {
@@ -149,30 +158,23 @@
             line-height: 1.5;
         }
 
-        /* Details Section */
-        .details-section {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 32px;
-            box-shadow: 0 2px 8px var(--shadow-color);
-            margin-bottom: 24px;
-        }
-
-        .details-grid {
-            display: grid;
-            gap: 16px;
+        /* Details List */
+        .details-list {
+            display: flex;
+            flex-direction: column;
         }
 
         .detail-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
+            padding: 14px 0;
             border-bottom: 1px solid var(--border-color);
         }
 
         .detail-row:last-child {
             border-bottom: none;
+            padding-bottom: 0;
         }
 
         .detail-label {
@@ -189,17 +191,11 @@
 
         /* Footer Section */
         .footer-section {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 2px 8px var(--shadow-color);
             text-align: center;
-        }
-
-        .footer-text {
             font-size: 14px;
             color: var(--text-muted);
-            margin: 0;
+            margin-top: 10px;
+            padding-bottom: 20px;
         }
 
         .footer-author {
@@ -209,41 +205,18 @@
 
         /* Responsive */
         @media (max-width: 600px) {
-            body {
-                padding: 16px;
-                padding-top: 40px;
-            }
-
-            .hero-card {
-                padding: 36px 24px;
-            }
-
-            .hero-title {
-                font-size: 32px;
-            }
-
-            .hero-subtitle {
-                font-size: 15px;
-            }
-
-            .features-section,
-            .details-section,
-            .footer-section {
-                padding: 24px;
-            }
-
-            .features-grid {
-                grid-template-columns: 1fr;
-                gap: 24px;
-            }
+            body { padding: 40px 16px 16px; }
+            .hero-card { padding: 36px 24px; }
+            .hero-title { font-size: 32px; }
+            .content-card { padding: 24px; }
+            .features-grid { grid-template-columns: 1fr; gap: 12px; }
+            .feature-item { padding: 12px 0; }
         }
     </style>
 </head>
-
 <body>
 
-    <div class="about-container">
-        <!-- Hero Card -->
+    <div class="container">
         <div class="hero-card">
             <div class="close-btn-wrapper">
                 <a href="index.html" class="close-btn" aria-label="Close">×</a>
@@ -251,42 +224,36 @@
             <div class="hero-content">
                 <h1 class="hero-title">Browser Core</h1>
                 <p class="hero-subtitle">
-                    A privacy-first start page that brings the web back to its roots—fast, focused, and
-                    distraction-free.
+                    A privacy-first start page that brings the web back to its roots—fast, focused, and distraction-free.
                 </p>
             </div>
         </div>
 
-        <!-- Features Section -->
-        <section class="features-section">
+        <div class="content-card">
             <h2 class="section-title">Key Features</h2>
             <div class="features-grid">
                 <div class="feature-item">
                     <h3 class="feature-title">Ultra Fast</h3>
                     <p class="feature-description">Lightning-fast search with zero bloat. Built for speed.</p>
                 </div>
-
                 <div class="feature-item">
                     <h3 class="feature-title">Private</h3>
                     <p class="feature-description">No tracking, no analytics. Your searches stay yours.</p>
                 </div>
-
                 <div class="feature-item">
                     <h3 class="feature-title">Beautiful</h3>
                     <p class="feature-description">Clean design with light and dark themes. Easy on the eyes.</p>
                 </div>
-
                 <div class="feature-item">
                     <h3 class="feature-title">Responsive</h3>
                     <p class="feature-description">Works perfectly on any device. Mobile-first design.</p>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- Details Section -->
-        <section class="details-section">
-            <h2 class="section-title">Details</h2>
-            <div class="details-grid">
+        <div class="content-card">
+            <h2 class="section-title">Technical Details</h2>
+            <div class="details-list">
                 <div class="detail-row">
                     <span class="detail-label">Version</span>
                     <span class="detail-value">1.0 Pro</span>
@@ -301,21 +268,17 @@
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Features</span>
-                    <span class="detail-value">Voice Search • History</span>
+                    <span class="detail-value">Voice Search • Local History</span>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- Footer Section -->
-        <footer class="footer-section">
-            <p class="footer-text">
-                Made by <span class="footer-author">Akram</span>
-            </p>
-        </footer>
+        <div class="footer-section">
+            Made by <span class="footer-author">Akram</span>
+        </div>
     </div>
 
     <script>
-        // Apply saved theme
         try {
             const currentTheme = localStorage.getItem('theme');
             if (currentTheme === 'dark') {
@@ -327,5 +290,4 @@
     </script>
 
 </body>
-
 </html>

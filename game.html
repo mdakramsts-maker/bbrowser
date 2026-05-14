@@ -405,10 +405,34 @@
                 align-items: flex-start;
             }
         }
+
+        
+
+
+        .close-game-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 32px;
+    color: var(--text-soft);
+    text-decoration: none;
+    line-height: 1;
+    z-index: 9999;
+    font-family: sans-serif;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+.close-game-btn:hover {
+    color: #ffffff;
+    transform: scale(1.1);
+}
+@media (max-width: 540px) {
+    .close-game-btn { top: 15px; right: 15px; font-size: 28px; }
+}
     </style>
 </head>
 <body>
 <div class="shell">
+    <a href="index.html" class="close-game-btn" aria-label="Exit Game">×</a>
     <header class="hud">
         <div class="logo">
             <span class="logo-main">Gree Runner</span>

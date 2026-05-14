@@ -1,105 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
-    <title>Gree Runner – Download</title>
+    <title>Gree Runner - Download</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #111111;
+            --card-bg: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.15);
+            --accent-color: #f3b407;
+            --border-color: #eeeeee;
+            --text-muted: #666666;
+            --btn-bg: #f9f9f9;
+            --btn-hover: #f0f0f0;
+        }
+
+        body.dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --accent-color: #ffca28;
+            --border-color: #333333;
+            --text-muted: #888888;
+            --btn-bg: #2a2a2a;
+            --btn-hover: #333333;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             min-height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
             display: flex;
-            align-items: center;
             justify-content: center;
-            font-family: system-ui, -apple-system, Segoe UI, sans-serif;
-            background: linear-gradient(135deg, #0f172a, #020617);
-            color: #e5e7eb;
+            align-items: flex-start;
+            padding: 60px 20px 20px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 640px;
+        }
+
+        /* Hero Card (Matching About & Settings) */
+        .hero-card {
+            background: linear-gradient(135deg, var(--accent-color) 0%, #ffa726 100%);
+            border-radius: 16px;
+            padding: 48px 32px;
+            box-shadow: 0 4px 16px var(--shadow-color);
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body.dark-mode .hero-card {
+            background: linear-gradient(135deg, var(--accent-color) 0%, #ff9800 100%);
+        }
+
+        .close-btn-wrapper {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .close-btn {
+            text-decoration: none;
+            font-size: 28px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1;
+            font-weight: 300;
+            transition: color 0.2s ease;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .close-btn:hover {
+            color: #ffffff;
+        }
+
+        .hero-content {
             text-align: center;
         }
 
-        .card {
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid #1f2937;
-            border-radius: 18px;
-            padding: 32px 26px;
-            max-width: 420px;
-            width: 90%;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
-        }
-
-        h1 {
-            margin: 0 0 6px;
-            font-size: 28px;
-            letter-spacing: 0.5px;
-        }
-
-        .sub {
-            color: #9ca3af;
-            font-size: 14px;
-            margin-bottom: 24px;
-        }
-
-        .download-btn {
-            display: inline-block;
-            padding: 14px 28px;
-            border-radius: 999px;
-            background: linear-gradient(135deg, #22c55e, #16a34a);
-            color: #052e16;
+        .hero-title {
+            margin: 0 0 12px 0;
+            font-size: 42px;
             font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -1px;
+        }
+
+        .hero-subtitle {
             font-size: 16px;
-            text-decoration: none;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            color: rgba(255, 255, 255, 0.95);
+            margin: 0;
+            line-height: 1.6;
+            font-weight: 400;
         }
 
-        .download-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.9);
+        /* Content Card */
+        .content-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            margin-bottom: 24px;
+            text-align: center;
         }
 
-        .buttons {
+        /* Action Buttons */
+        .action-btn {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 14px;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            background-color: var(--btn-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+            transition: transform 0.15s ease, background-color 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .footer {
-            margin-top: 26px;
-            font-size: 12px;
-            color: #6b7280;
+        .action-btn:last-child {
+            margin-bottom: 0;
+        }
+
+        .action-btn:hover {
+            background-color: var(--btn-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        /* Special Highlight for Play Button */
+        .action-btn.play-btn {
+            background: linear-gradient(135deg, var(--accent-color) 0%, #ff9800 100%);
+            color: #ffffff;
+            border: none;
+        }
+
+        body.dark-mode .action-btn.play-btn {
+            background: linear-gradient(135deg, var(--accent-color) 0%, #ff9800 100%);
+        }
+
+        .action-btn.play-btn:hover {
+            box-shadow: 0 6px 16px rgba(243, 180, 7, 0.4);
+            transform: translateY(-3px);
+        }
+
+        /* Footer */
+        .footer-section {
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            body { padding: 40px 16px 16px; }
+            .hero-card { padding: 36px 24px; }
+            .hero-title { font-size: 32px; }
+            .content-card { padding: 24px; }
         }
     </style>
 </head>
-
 <body>
-    <div class="card">
-        <h1>Gree Runner</h1>
-        <div class="sub">Endless Runner Game</div>
 
-        <div class="buttons">
-            <a class="download-btn"
-                <a href="game.html" class="menu-item">
-                Play Game
-            </a>
-            
-            <a class="download-btn"
-                href="https://github.com/mdakramsts-maker/bbrowser/releases/latest/download/GreeRunner-Android.apk">
-                Download for Android
-            </a>
-            
-            <a class="download-btn"
-                href="https://github.com/mdakramsts-maker/bbrowser/releases/download/v1.0.0/GreeRunner-Setup.exe">
-                Download for Windows
-            </a>
-            
+    <div class="container">
+        <div class="hero-card">
+            <div class="close-btn-wrapper">
+                <a href="index.html" class="close-btn" aria-label="Close">×</a>
+            </div>
+            <div class="hero-content">
+                <h1 class="hero-title">Gree Runner</h1>
+                <p class="hero-subtitle">Endless 2D Runner Game</p>
+            </div>
         </div>
 
-        <div class="footer">
-            © 2026 Gree Runner<br />
+        <div class="content-card">
+            <a href="game.html" class="action-btn play-btn">
+                ▶ Play Game in Browser
+            </a>
+            
+            <a href="https://github.com/mdakramsts-maker/bbrowser/releases/latest/download/GreeRunner-Android.apk" class="action-btn">
+                ⬇ Download for Android
+            </a>
+            
+            <a href="https://github.com/mdakramsts-maker/bbrowser/releases/download/v1.0.0/GreeRunner-Setup.exe" class="action-btn">
+                ⬇ Download for Windows
+            </a>
+        </div>
+
+        <div class="footer-section">
+            © 2026 Gree Runner
         </div>
     </div>
-</body>
 
+    <script>
+        try {
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+        } catch (e) {
+            console.error('Theme load error:', e);
+        }
+    </script>
+
+</body>
 </html>
